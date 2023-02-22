@@ -28,21 +28,34 @@ class Song
     DB[:conn].execute(sql)
   end
 
-  def save
-    sql = <<-SQL
-      INSERT INTO songs (name, album)
-      VALUES (?, ?)
-    SQL
+  # def save
+  #   sql = <<-SQL
+  #     INSERT INTO songs (name, album)
+  #     VALUES (?, ?)
+  #   SQL
 
-    # insert the song
-    DB[:conn].execute(sql, self.name, self.album)
+  #   # insert the song
+  #   DB[:conn].execute(sql, self.name, self.album)
 
-    # get the song ID from the database and save it to the Ruby instance
-    self.id = DB[:conn].execute("SELECT last_insert_rowid() FROM songs")[0][0]
+  #   # get the song ID from the database and save it to the Ruby instance
+  #   self.id = DB[:conn].execute("SELECT last_insert_rowid() FROM songs")[0][0]
 
-    # return the Ruby instance
-    self
-  end
+  #   # return the Ruby instance
+  #   self
+  # end
+
+  # def save
+  #   if self.id
+  #     self.update
+  #   else
+  #     sql = <<-SQL
+  #       INSERT INTO songs (name, album)
+  #       VALUES (?, ?)
+  #     SQL
+  #     DB[:conn].execute(sql, self.name, self.album)
+  #     @id = DB[:conn].execute("SELECT last_insert_rowid() FROM songs")[0][0]
+  #   end
+  # end
 
   def self.create(name:, album:)
     song = Song.new(name: name, album: album)
@@ -76,5 +89,15 @@ class Song
     DB[:conn].execute(sql, name).map do |row|
       self.new_from_db(row)
     end.first
+  end
+
+  # def update
+  #   sql = "UPDATE songs SET name = ?, album = ? WHERE name = ?"
+  #   DB[:conn].execute(sql, self.name, self.album, self.name)
+  # end
+
+  def UPDATE
+    sql = "UPDATE songs SET name = ?, album = ? WHERE id = ?"
+    DB[:conn].execute(sql, self.name, self.album, self.id)
   end
 end
